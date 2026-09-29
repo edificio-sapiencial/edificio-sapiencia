@@ -1,0 +1,1058 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+
+body {
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background-color: #0d0920;
+
+    color: white;
+
+    overflow-x: hidden;
+
+
+    /* FONDO DE MEDELLÍN */
+
+    background-image:
+
+        linear-gradient(
+            rgba(10, 6, 30, 0.35),
+            rgba(10, 6, 30, 0.45)
+        ),
+
+        url("fondo-medellin.png");
+
+
+    background-size: cover;
+
+    background-position: center;
+
+    background-attachment: fixed;
+
+    background-repeat: no-repeat;
+}
+
+
+/* ================================= */
+/* VISOR 3D */
+/* ================================= */
+
+#visor-3d {
+
+    position: relative;
+
+    width: 100%;
+
+    height: 100vh;
+
+    min-height: 650px;
+
+    overflow: hidden;
+
+    background:
+
+        linear-gradient(
+            180deg,
+            rgba(14, 7, 36, 0.20),
+            rgba(8, 5, 25, 0.35)
+        );
+
+    border-top:
+        3px solid
+        rgba(130, 80, 255, 0.55);
+}
+
+
+/* ================================= */
+/* MODELO */
+/* ================================= */
+
+#modelo-3d {
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    z-index: 1;
+}
+
+
+#modelo-3d canvas {
+
+    display: block;
+
+    width: 100% !important;
+
+    height: 100% !important;
+
+    outline: none;
+}
+
+
+/* ================================= */
+/* BARRA SUPERIOR */
+/* ================================= */
+
+.barra-superior {
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    min-height: 90px;
+
+    padding:
+        20px
+        40px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    z-index: 50;
+
+    background:
+
+        linear-gradient(
+            180deg,
+            rgba(10, 5, 30, 0.92),
+            rgba(10, 5, 30, 0.60),
+            transparent
+        );
+}
+
+
+.logo {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+}
+
+
+.logo-principal {
+
+    font-size: 28px;
+
+    font-weight: 800;
+
+    color: white;
+}
+
+
+.logo-subtitulo {
+
+    font-size: 11px;
+
+    color:
+        rgba(
+            255,
+            255,
+            255,
+            0.72
+        );
+}
+
+
+/* ================================= */
+/* BOTONES SUPERIORES */
+/* ================================= */
+
+.botones {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.boton,
+.menu {
+
+    width: 44px;
+
+    height: 44px;
+
+    border-radius: 50%;
+
+    border:
+        1px solid
+        rgba(
+            180,
+            190,
+            255,
+            0.25
+        );
+
+    background:
+        rgba(
+            12,
+            8,
+            30,
+            0.65
+        );
+
+    color: white;
+
+    font-size: 18px;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    transition:
+
+        transform 0.25s ease,
+
+        background 0.25s ease,
+
+        border-color 0.25s ease;
+}
+
+
+.boton:hover,
+.menu:hover {
+
+    transform:
+        translateY(-2px)
+        scale(1.05);
+
+    background:
+        rgba(
+            70,
+            45,
+            130,
+            0.80
+        );
+
+    border-color:
+        rgba(
+            120,
+            190,
+            255,
+            0.75
+        );
+}
+
+
+/* ================================= */
+/* TÍTULO */
+/* ================================= */
+
+.titulo {
+
+    position: absolute;
+
+    top: 145px;
+
+    left: 50px;
+
+    z-index: 15;
+
+    pointer-events: none;
+}
+
+
+.titulo h1 {
+
+    font-size:
+
+        clamp(
+            38px,
+            4vw,
+            62px
+        );
+
+    font-weight: 800;
+
+    letter-spacing: -1.5px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            #ffffff,
+            #b9c8ff
+        );
+
+    -webkit-background-clip: text;
+
+    background-clip: text;
+
+    color: transparent;
+}
+
+
+.titulo p {
+
+    margin-top: 12px;
+
+    color:
+        rgba(
+            255,
+            255,
+            255,
+            0.78
+        );
+
+    font-size: 16px;
+}
+
+
+/* ================================= */
+/* RECORRIDO */
+/* ================================= */
+
+.recorrido {
+
+    position: absolute;
+
+    top: 125px;
+
+    right: 45px;
+
+    z-index: 20;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    min-width: 250px;
+
+    padding:
+        10px
+        18px
+        10px
+        10px;
+
+    border:
+        1px solid
+        rgba(
+            150,
+            130,
+            255,
+            0.35
+        );
+
+    border-radius: 50px;
+
+    background:
+        rgba(
+            18,
+            10,
+            45,
+            0.78
+        );
+
+    backdrop-filter:
+        blur(12px);
+
+    -webkit-backdrop-filter:
+        blur(12px);
+
+    cursor: pointer;
+
+    transition:
+
+        transform 0.25s ease,
+
+        background 0.25s ease,
+
+        border-color 0.25s ease;
+}
+
+
+.recorrido:hover {
+
+    transform:
+        translateY(-2px);
+
+    background:
+        rgba(
+            35,
+            20,
+            75,
+            0.90
+        );
+
+    border-color:
+        rgba(
+            150,
+            180,
+            255,
+            0.70
+        );
+}
+
+
+.icono-play {
+
+    width: 44px;
+
+    height: 44px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #6da8ff,
+            #8060ff
+        );
+
+    box-shadow:
+
+        0 0 20px
+        rgba(
+            100,
+            130,
+            255,
+            0.45
+        );
+}
+
+
+.texto-recorrido {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.texto-recorrido strong {
+
+    font-size: 14px;
+}
+
+
+.texto-recorrido span {
+
+    font-size: 12px;
+
+    color:
+        rgba(
+            255,
+            255,
+            255,
+            0.60
+        );
+}
+
+
+.flecha {
+
+    margin-left: auto;
+
+    font-size: 28px;
+
+    color:
+        rgba(
+            255,
+            255,
+            255,
+            0.75
+        );
+}
+
+
+/* ================================= */
+/* INSTRUCCIONES */
+/* ================================= */
+
+.instrucciones {
+
+    position: absolute;
+
+    bottom: 35px;
+
+    left: 50px;
+
+    z-index: 20;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    padding:
+        10px
+        15px;
+
+    border-radius: 12px;
+
+    background:
+        rgba(
+            12,
+            8,
+            30,
+            0.55
+        );
+
+    backdrop-filter:
+        blur(8px);
+
+    -webkit-backdrop-filter:
+        blur(8px);
+
+    color:
+        rgba(
+            255,
+            255,
+            255,
+            0.78
+        );
+
+    font-size: 12px;
+
+    pointer-events: none;
+}
+
+
+.instrucciones p {
+
+    margin: 0;
+
+    line-height: 1.5;
+}
+
+
+.mouse-icon {
+
+    width: 22px;
+
+    height: 32px;
+
+    border:
+        2px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.75
+        );
+
+    border-radius: 12px;
+
+    display: flex;
+
+    justify-content: center;
+
+    padding-top: 5px;
+}
+
+
+/* ================================= */
+/* PANTALLA COMPLETA */
+/* ================================= */
+
+.pantalla-completa {
+
+    position: absolute;
+
+    right: 40px;
+
+    bottom: 28px;
+
+    z-index: 20;
+
+    width: 54px;
+
+    height: 54px;
+
+    border-radius: 50%;
+
+    border:
+        1px solid
+        rgba(
+            180,
+            190,
+            255,
+            0.25
+        );
+
+    background:
+        rgba(
+            12,
+            8,
+            30,
+            0.55
+        );
+
+    color: white;
+
+    font-size: 20px;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+.pantalla-completa:hover {
+
+    transform: scale(1.08);
+
+    background:
+        rgba(
+            35,
+            25,
+            75,
+            0.80
+        );
+}
+
+
+/* ================================= */
+/* VENTANA UBICACIÓN */
+/* ================================= */
+
+.ventana-ubicacion {
+
+    position: fixed;
+
+    top: 90px;
+
+    right: 35px;
+
+    width: 350px;
+
+    z-index: 100;
+
+    padding: 25px;
+
+    border-radius: 18px;
+
+    background:
+        rgba(
+            15,
+            9,
+            38,
+            0.95
+        );
+
+    border:
+        1px solid
+        rgba(
+            140,
+            150,
+            255,
+            0.30
+        );
+
+    backdrop-filter:
+        blur(18px);
+
+    -webkit-backdrop-filter:
+        blur(18px);
+
+    box-shadow:
+
+        0 20px 60px
+        rgba(
+            0,
+            0,
+            0,
+            0.45
+        );
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transform:
+        translateY(-10px)
+        scale(0.97);
+
+    transition:
+
+        opacity 0.25s ease,
+
+        visibility 0.25s ease,
+
+        transform 0.25s ease;
+}
+
+
+.ventana-ubicacion.activa {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+
+.cerrar-ubicacion {
+
+    position: absolute;
+
+    top: 10px;
+
+    right: 12px;
+
+    width: 30px;
+
+    height: 30px;
+
+    border: none;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 25px;
+
+    cursor: pointer;
+}
+
+
+.ubicacion-titulo {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 20px;
+
+    font-size: 17px;
+}
+
+
+.ubicacion-contenido {
+
+    color:
+        rgba(
+            255,
+            255,
+            255,
+            0.78
+        );
+
+    line-height: 1.5;
+
+    font-size: 14px;
+}
+
+
+.ubicacion-contenido p {
+
+    margin-bottom: 8px;
+}
+
+
+.telefono a {
+
+    color: #8fc5ff;
+
+    text-decoration: none;
+}
+
+
+.telefono a:hover {
+
+    text-decoration: underline;
+}
+
+
+.boton-google-maps {
+
+    display: block;
+
+    margin-top: 18px;
+
+    padding:
+        11px
+        15px;
+
+    border-radius: 10px;
+
+    text-align: center;
+
+    text-decoration: none;
+
+    color: white;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #6da8ff,
+            #8060ff
+        );
+
+    transition:
+        transform 0.2s ease;
+}
+
+
+.boton-google-maps:hover {
+
+    transform:
+        translateY(-2px);
+}
+
+
+/* ================================= */
+/* PANTALLA COMPLETA CSS */
+/* ================================= */
+
+#visor-3d:fullscreen {
+
+    width: 100vw;
+
+    height: 100vh;
+}
+
+
+#visor-3d:-webkit-full-screen {
+
+    width: 100vw;
+
+    height: 100vh;
+}
+
+
+/* ================================= */
+/* SCROLLBAR */
+/* ================================= */
+
+::-webkit-scrollbar {
+
+    width: 8px;
+}
+
+
+::-webkit-scrollbar-track {
+
+    background: #0d0920;
+}
+
+
+::-webkit-scrollbar-thumb {
+
+    background:
+
+        linear-gradient(
+            180deg,
+            #6da8ff,
+            #8060ff
+        );
+
+    border-radius: 10px;
+}
+
+
+/* ================================= */
+/* RESPONSIVE */
+/* ================================= */
+
+@media (max-width: 900px) {
+
+    .barra-superior {
+
+        padding:
+            18px
+            25px;
+    }
+
+
+    .logo-subtitulo {
+
+        max-width: 250px;
+    }
+
+
+    .titulo {
+
+        left: 30px;
+
+        top: 130px;
+    }
+
+
+    .titulo h1 {
+
+        font-size: 40px;
+    }
+
+
+    .recorrido {
+
+        right: 25px;
+
+        top: 115px;
+    }
+
+
+    .instrucciones {
+
+        left: 25px;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .barra-superior {
+
+        padding: 15px;
+    }
+
+
+    .logo-principal {
+
+        font-size: 22px;
+    }
+
+
+    .logo-subtitulo {
+
+        font-size: 9px;
+
+        max-width: 170px;
+    }
+
+
+    .botones {
+
+        gap: 5px;
+    }
+
+
+    .boton,
+    .menu {
+
+        width: 38px;
+
+        height: 38px;
+
+        font-size: 15px;
+    }
+
+
+    .titulo {
+
+        left: 20px;
+
+        top: 125px;
+    }
+
+
+    .titulo h1 {
+
+        font-size: 30px;
+    }
+
+
+    .titulo p {
+
+        font-size: 13px;
+    }
+
+
+    .recorrido {
+
+        top: auto;
+
+        right: 20px;
+
+        bottom: 90px;
+
+        min-width: 210px;
+    }
+
+
+    .instrucciones {
+
+        left: 20px;
+
+        bottom: 20px;
+
+        font-size: 10px;
+    }
+
+
+    .pantalla-completa {
+
+        right: 20px;
+
+        bottom: 20px;
+
+        width: 46px;
+
+        height: 46px;
+    }
+
+
+    .ventana-ubicacion {
+
+        top: 75px;
+
+        right: 15px;
+
+        left: 15px;
+
+        width: auto;
+    }
+
+}
