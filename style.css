@@ -1,0 +1,864 @@
+
+/* =========================================================
+   COLORES SAPIENCIA
+========================================================= */
+
+:root {
+    --magenta: #A71989;
+    --magenta-claro: #D85BBF;
+
+    --turquesa: #009698;
+    --turquesa-claro: #4CC4C5;
+
+    --amarillo: #FFBF16;
+    --amarillo-claro: #FFD866;
+
+    --azul-claro: #67C6DD;
+    --azul-claro-suave: #9DDEEB;
+
+    --azul-violeta: #5D62AC;
+    --azul-violeta-claro: #8D91CC;
+
+    /* Fondo de día */
+    --fondo-dia: #B4D5E2;
+    --fondo-dia-2: #A7CCD9;
+
+    --blanco: #FFFFFF;
+    --texto-oscuro: #25254A;
+}
+
+
+/* =========================================================
+   CONFIGURACIÓN GENERAL
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+    min-height: 100vh;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background-color: var(--fondo-dia);
+
+    color: var(--texto-oscuro);
+
+    overflow-x: hidden;
+}
+
+
+/* =========================================================
+   BARRA SUPERIOR
+========================================================= */
+
+.barra-superior {
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 82px;
+
+    background-color: var(--blanco);
+
+    border-bottom: 4px solid var(--azul-claro);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 35px;
+
+    z-index: 1000;
+
+    box-shadow:
+        0 3px 12px rgba(93, 98, 172, 0.18);
+}
+
+
+/* =========================================================
+   LOGO / NOMBRE
+========================================================= */
+
+.logo {
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    gap: 3px;
+}
+
+
+.logo-principal {
+    display: none;
+}
+
+
+.logo-subtitulo {
+
+    color: var(--azul-violeta);
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.2px;
+}
+
+
+/* =========================================================
+   BOTONES SUPERIORES
+========================================================= */
+
+.botones {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.boton {
+
+    width: 44px;
+    height: 44px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background-color: var(--azul-violeta-claro);
+
+    color: var(--blanco);
+
+    font-size: 19px;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    transition:
+        transform 0.2s ease,
+        background-color 0.2s ease;
+}
+
+
+.boton:hover {
+
+    background-color: var(--azul-violeta);
+
+    transform: translateY(-2px);
+}
+
+
+.boton-mapa {
+
+    background-color: var(--turquesa);
+}
+
+
+.boton-mapa:hover {
+
+    background-color: var(--turquesa-claro);
+}
+
+
+/* =========================================================
+   BOTÓN MENÚ
+========================================================= */
+
+.menu {
+
+    width: 46px;
+    height: 46px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background-color: var(--magenta);
+
+    color: var(--blanco);
+
+    font-size: 25px;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.menu:hover {
+
+    background-color: var(--magenta-claro);
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   VENTANA DE UBICACIÓN
+========================================================= */
+
+.ventana-ubicacion {
+
+    position: fixed;
+
+    top: 100px;
+
+    right: 30px;
+
+    width: 360px;
+
+    background-color: var(--blanco);
+
+    border-radius: 18px;
+
+    border-left: 6px solid var(--turquesa);
+
+    box-shadow:
+        0 12px 35px rgba(93, 98, 172, 0.25);
+
+    padding: 25px;
+
+    z-index: 2000;
+
+    display: none;
+}
+
+
+.ventana-ubicacion.activa {
+    display: block;
+}
+
+
+/* =========================================================
+   CERRAR UBICACIÓN
+========================================================= */
+
+.cerrar-ubicacion {
+
+    position: absolute;
+
+    top: 12px;
+    right: 14px;
+
+    width: 32px;
+    height: 32px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background-color: var(--magenta);
+
+    color: var(--blanco);
+
+    font-size: 22px;
+
+    cursor: pointer;
+}
+
+
+.cerrar-ubicacion:hover {
+
+    background-color: var(--magenta-claro);
+}
+
+
+/* =========================================================
+   TÍTULO UBICACIÓN
+========================================================= */
+
+.ubicacion-titulo {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    color: var(--azul-violeta);
+
+    font-size: 18px;
+
+    margin-bottom: 18px;
+}
+
+
+.ubicacion-titulo span {
+
+    color: var(--turquesa);
+
+    font-size: 22px;
+}
+
+
+/* =========================================================
+   CONTENIDO UBICACIÓN
+========================================================= */
+
+.ubicacion-contenido {
+
+    color: #44445A;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+
+.ubicacion-contenido strong {
+
+    color: var(--azul-violeta);
+}
+
+
+.telefono {
+
+    margin-top: 12px;
+}
+
+
+.telefono a {
+
+    color: var(--turquesa);
+
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+
+.telefono a:hover {
+
+    color: var(--turquesa-claro);
+
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   BOTÓN GOOGLE MAPS
+========================================================= */
+
+.boton-google-maps {
+
+    display: block;
+
+    margin-top: 20px;
+
+    padding: 12px 15px;
+
+    border-radius: 10px;
+
+    background-color: var(--turquesa);
+
+    color: var(--blanco);
+
+    text-decoration: none;
+
+    text-align: center;
+
+    font-weight: 700;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.boton-google-maps:hover {
+
+    background-color: var(--turquesa-claro);
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   VISOR 3D
+========================================================= */
+
+#visor-3d {
+
+    position: relative;
+
+    min-height: 100vh;
+
+    padding-top: 82px;
+
+    background-color: var(--fondo-dia);
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   TÍTULO
+   TOTALMENTE A LA IZQUIERDA
+========================================================= */
+
+.titulo {
+
+    position: absolute;
+
+    top: 115px;
+
+    left: 35px;
+
+    width: auto;
+
+    text-align: left;
+
+    z-index: 10;
+
+    pointer-events: none;
+}
+
+
+.titulo h1 {
+
+    color: var(--azul-violeta);
+
+    font-size: 38px;
+
+    font-weight: 800;
+
+    margin-bottom: 8px;
+}
+
+
+.titulo p {
+
+    color: var(--turquesa);
+
+    font-size: 16px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   CONTENEDOR DEL MODELO 3D
+========================================================= */
+
+#modelo-3d {
+
+    width: 100%;
+
+    height: calc(100vh - 82px);
+
+    min-height: 600px;
+
+    position: relative;
+
+    background-color: var(--fondo-dia);
+
+    overflow: hidden;
+}
+
+
+#modelo-3d canvas {
+
+    display: block;
+
+    width: 100% !important;
+
+    height: 100% !important;
+}
+
+
+/* =========================================================
+   RECORRIDO
+========================================================= */
+
+.recorrido {
+
+    position: absolute;
+
+    left: 30px;
+
+    bottom: 35px;
+
+    min-width: 230px;
+
+    padding: 14px 18px;
+
+    border-radius: 15px;
+
+    background-color: var(--blanco);
+
+    border-left: 5px solid var(--magenta);
+
+    box-shadow:
+        0 8px 25px rgba(93, 98, 172, 0.20);
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    z-index: 20;
+}
+
+
+.icono-play {
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 50%;
+
+    background-color: var(--magenta);
+
+    color: var(--blanco);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 15px;
+}
+
+
+.texto-recorrido {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.texto-recorrido strong {
+
+    color: var(--azul-violeta);
+
+    font-size: 14px;
+}
+
+
+.texto-recorrido span {
+
+    color: var(--turquesa);
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+.flecha {
+
+    margin-left: auto;
+
+    color: var(--magenta);
+
+    font-size: 28px;
+}
+
+
+/* =========================================================
+   INSTRUCCIONES
+========================================================= */
+
+.instrucciones {
+
+    position: absolute;
+
+    right: 30px;
+
+    bottom: 35px;
+
+    padding: 15px 20px;
+
+    background-color: var(--blanco);
+
+    border-radius: 15px;
+
+    border-right: 5px solid var(--azul-claro);
+
+    box-shadow:
+        0 8px 25px rgba(93, 98, 172, 0.20);
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    z-index: 20;
+}
+
+
+.mouse-icon {
+
+    font-size: 27px;
+
+    color: var(--azul-violeta);
+}
+
+
+.instrucciones p {
+
+    color: #55556A;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+.instrucciones p:first-child {
+
+    color: var(--azul-violeta);
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   BOTÓN PANTALLA COMPLETA
+========================================================= */
+
+.pantalla-completa {
+
+    position: absolute;
+
+    top: 115px;
+
+    right: 30px;
+
+    width: 45px;
+    height: 45px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background-color: var(--azul-violeta);
+
+    color: var(--blanco);
+
+    font-size: 22px;
+
+    cursor: pointer;
+
+    z-index: 30;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.pantalla-completa:hover {
+
+    background-color: var(--azul-violeta-claro);
+
+    transform: scale(1.05);
+}
+
+
+/* =========================================================
+   SELECCIÓN DE TEXTO
+========================================================= */
+
+::selection {
+
+    background-color: var(--magenta);
+
+    color: var(--blanco);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .barra-superior {
+
+        padding: 0 20px;
+    }
+
+
+    .logo-subtitulo {
+
+        font-size: 16px;
+
+        max-width: 400px;
+    }
+
+
+    .titulo h1 {
+
+        font-size: 30px;
+    }
+
+
+    .recorrido {
+
+        left: 20px;
+
+        bottom: 20px;
+    }
+
+
+    .instrucciones {
+
+        right: 20px;
+
+        bottom: 20px;
+    }
+}
+
+
+@media (max-width: 650px) {
+
+    .barra-superior {
+
+        height: 70px;
+    }
+
+
+    #visor-3d {
+
+        padding-top: 70px;
+    }
+
+
+    #modelo-3d {
+
+        height: calc(100vh - 70px);
+    }
+
+
+    .logo-subtitulo {
+
+        font-size: 13px;
+
+        max-width: 220px;
+    }
+
+
+    .boton {
+
+        width: 38px;
+
+        height: 38px;
+
+        font-size: 16px;
+    }
+
+
+    .menu {
+
+        width: 40px;
+
+        height: 40px;
+    }
+
+
+    .botones {
+
+        gap: 5px;
+    }
+
+
+    .titulo {
+
+        top: 100px;
+
+        left: 20px;
+    }
+
+
+    .titulo h1 {
+
+        font-size: 24px;
+    }
+
+
+    .titulo p {
+
+        font-size: 13px;
+    }
+
+
+    .recorrido {
+
+        left: 15px;
+
+        bottom: 15px;
+
+        min-width: 190px;
+
+        padding: 10px 12px;
+    }
+
+
+    .instrucciones {
+
+        display: none;
+    }
+
+
+    .pantalla-completa {
+
+        top: 95px;
+
+        right: 15px;
+
+        width: 40px;
+
+        height: 40px;
+    }
+
+
+    .ventana-ubicacion {
+
+        top: 85px;
+
+        right: 15px;
+
+        left: 15px;
+
+        width: auto;
+    }
+}
