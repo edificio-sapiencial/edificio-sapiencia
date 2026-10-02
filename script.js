@@ -161,6 +161,10 @@ controles.enableZoom =
 controles.enablePan =
     true;
 
+/*
+   El modelo ahora comienza frente a la entrada.
+   Se mantiene la rotación automática.
+*/
 controles.autoRotate =
     true;
 
@@ -246,13 +250,6 @@ const teclasMovimiento = {
    VELOCIDAD DEL MOVIMIENTO
 ========================================================= */
 
-/*
-   Antes estaba en 0.12 y era demasiado rápido.
-
-   Ahora usamos una velocidad máxima mucho menor
-   y aceleración/desaceleración.
-*/
-
 const velocidadMaxima =
     0.055;
 
@@ -314,7 +311,6 @@ if (botonRecorrido) {
             controles.autoRotate =
                 !controles.autoRotate;
 
-
             actualizarEstadoRecorrido(
                 controles.autoRotate
             );
@@ -343,17 +339,14 @@ document.addEventListener(
 
         evento.preventDefault();
 
-
         if (haciendoRecorrido) {
 
             return;
 
         }
 
-
         controles.autoRotate =
             !controles.autoRotate;
-
 
         actualizarEstadoRecorrido(
             controles.autoRotate
@@ -375,7 +368,6 @@ document.addEventListener(
             evento.key.length === 1
                 ? evento.key.toLowerCase()
                 : evento.key;
-
 
         if (
             Object.prototype.hasOwnProperty.call(
@@ -403,7 +395,6 @@ document.addEventListener(
             evento.key.length === 1
                 ? evento.key.toLowerCase()
                 : evento.key;
-
 
         if (
             Object.prototype.hasOwnProperty.call(
@@ -483,7 +474,6 @@ document.addEventListener(
             return;
 
         }
-
 
         if (
             ventanaUbicacion.classList.contains(
@@ -602,6 +592,342 @@ dracoLoader.setDecoderPath(
 loader.setDRACOLoader(
     dracoLoader
 );
+
+
+/* =========================================================
+   FUNCIÓN PARA COLOCAR CÁMARA FRENTE A LA PUERTA
+========================================================= */
+
+function colocarCamaraEnEntrada(
+    mayor
+) {
+
+    if (
+        !puntoPuerta
+    ) {
+
+        console.warn(
+            "No se encontró el objeto PUERTA. Se usará una cámara alternativa."
+        );
+
+        const distanciaInicial =
+            mayor * 0.40;
+
+        camara.position.set(
+            0,
+            mayor * 0.18,
+            distanciaInicial
+        );
+
+        controles.target.set(
+            0,
+            mayor * 0.08,
+            0
+        );
+
+        controles.update();
+
+        return;
+
+    }
+
+
+    /* =====================================================
+       CAJA DE LA PUERTA
+    ===================================================== */
+
+    const cajaPuerta =
+        new THREE.Box3()
+            .setFromObject(
+                puntoPuerta
+            );
+
+
+    const centroPuerta =
+        cajaPuerta.getCenter(
+            new THREE.Vector3()
+        );
+
+
+    const tamañoPuerta =
+        cajaPuerta.getSize(
+            new THREE.Vector3()
+        );
+
+
+    /* =====================================================
+       CENTRO DEL EDIFICIO
+    ===================================================== */
+
+    const cajaEdificio =
+        new THREE.Box3()
+            .setFromObject(
+                edificio
+            );
+
+
+    const centro =
+        cajaEdificio.getCenter(
+            new THREE.Vector3()
+        );
+
+
+    /* =====================================================
+       ROTACIÓN DE LA PUERTA
+    ===================================================== */
+
+    const quaternionPuerta =
+        new THREE.Quaternion();
+
+    puntoPuerta.getWorldQuaternion(
+        quaternionPuerta
+    );
+
+
+    const normalX =
+        new THREE.Vector3(
+            1,
+            0,
+            0
+        )
+            .applyQuaternion(
+                quaternionPuerta
+            )
+            .normalize();
+
+
+    const normalZ =
+        new THREE.Vector3(
+            0,
+            0,
+            1
+        )
+            .applyQuaternion(
+                quaternionPuerta
+            )
+            .normalize();
+
+
+    /* =====================================================
+       DIRECCIÓN HACIA AFUERA
+    ===================================================== */
+
+    const haciaAfuera =
+        new THREE.Vector3()
+            .subVectors(
+                centroPuerta,
+                centro
+            );
+
+
+    haciaAfuera.y =
+        0;
+
+
+    if (
+        haciaAfuera.lengthSq() >
+        0.0001
+    ) {
+
+        haciaAfuera.normalize();
+
+    }
+
+    else {
+
+        haciaAfuera.set(
+            0,
+            0,
+            1
+        );
+
+    }
+
+
+    /* =====================================================
+       DETERMINAR FRENTE DE PUERTA
+    ===================================================== */
+
+    let direccionPuerta;
+
+
+    if (
+        Math.abs(
+            normalX.dot(
+                haciaAfuera
+            )
+        )
+        >
+        Math.abs(
+            normalZ.dot(
+                haciaAfuera
+            )
+        )
+    ) {
+
+        direccionPuerta =
+            normalX.clone();
+
+    }
+
+    else {
+
+        direccionPuerta =
+            normalZ.clone();
+
+    }
+
+
+    /* =====================================================
+       ASEGURAR QUE APUNTE HACIA AFUERA
+    ===================================================== */
+
+    if (
+        direccionPuerta.dot(
+            haciaAfuera
+        ) < 0
+    ) {
+
+        direccionPuerta.negate();
+
+    }
+
+
+    direccionPuerta.y =
+        0;
+
+
+    direccionPuerta.normalize();
+
+
+    /* =====================================================
+       DISTANCIA DE LA CÁMARA
+    ===================================================== */
+
+    /*
+       Esta es la parte importante.
+
+       La cámara queda suficientemente atrás
+       para que se vea completa la entrada,
+       pero sin regresar a la vista general
+       de la primera imagen.
+    */
+
+    const distanciaPorPuerta =
+        Math.max(
+            tamañoPuerta.x,
+            tamañoPuerta.z
+        ) * 4.0;
+
+
+    const distanciaPorEdificio =
+        mayor * 0.25;
+
+
+    let distanciaEntrada =
+        Math.max(
+            distanciaPorPuerta,
+            distanciaPorEdificio
+        );
+
+
+    /*
+       Evitamos que la cámara quede demasiado lejos.
+    */
+
+    distanciaEntrada =
+        Math.min(
+            distanciaEntrada,
+            mayor * 0.40
+        );
+
+
+    distanciaEntrada =
+        Math.max(
+            distanciaEntrada,
+            mayor * 0.18
+        );
+
+
+    /* =====================================================
+       POSICIÓN DE LA CÁMARA
+    ===================================================== */
+
+    const posicionCamara =
+        centroPuerta.clone();
+
+
+    posicionCamara.add(
+        direccionPuerta
+            .clone()
+            .multiplyScalar(
+                distanciaEntrada
+            )
+    );
+
+
+    /*
+       Elevamos un poco la cámara.
+
+       Esto conserva el ángulo parecido
+       al de tu segunda imagen.
+    */
+
+    posicionCamara.y =
+        centroPuerta.y +
+        mayor * 0.08;
+
+
+    /* =====================================================
+       OBJETIVO
+    ===================================================== */
+
+    const objetivo =
+        centroPuerta.clone();
+
+
+    objetivo.y =
+        centroPuerta.y +
+        mayor * 0.025;
+
+
+    /* =====================================================
+       COLOCAR CÁMARA
+    ===================================================== */
+
+    camara.position.copy(
+        posicionCamara
+    );
+
+
+    controles.target.copy(
+        objetivo
+    );
+
+
+    controles.update();
+
+
+    console.log(
+        "CÁMARA COLOCADA FRENTE A LA ENTRADA"
+    );
+
+    console.log(
+        "Distancia:",
+        distanciaEntrada
+    );
+
+    console.log(
+        "Posición cámara:",
+        camara.position
+    );
+
+    console.log(
+        "Objetivo:",
+        controles.target
+    );
+
+}
 
 
 /* =========================================================
@@ -762,23 +1088,31 @@ loader.load(
            CÁMARA INICIAL
         ========================================== */
 
-        const distanciaInicial =
-            mayor * 0.62;
+        /*
+           ANTES:
 
+           La cámara comenzaba desde una esquina:
 
-        camara.position.set(
-            distanciaInicial,
-            distanciaInicial * 0.38,
-            distanciaInicial
+           x = distancia
+           y = distancia * 0.38
+           z = distancia
+
+           Por eso aparecía como en la primera imagen.
+
+           AHORA:
+
+           La cámara se coloca automáticamente
+           frente al objeto PUERTA.
+        */
+
+        colocarCamaraEnEntrada(
+            mayor
         );
 
 
-        controles.target.set(
-            0,
-            mayor * 0.05,
-            0
-        );
-
+        /* ==========================================
+           DISTANCIAS DE ORBIT CONTROLS
+        ========================================== */
 
         controles.minDistance =
             Math.max(
@@ -852,17 +1186,6 @@ loader.load(
    CREAR RECORRIDO
 ========================================================= */
 
-/*
-   IMPORTANTE:
-
-   Ahora el recorrido tiene MUCHOS puntos.
-
-   Esto hace que la cámara siga una trayectoria
-   exterior alrededor del edificio, parecida a
-   seguir una calle, en lugar de saltar de una
-   esquina a otra en diagonal.
-*/
-
 function crearRecorridoCinematico(
     mayor
 ) {
@@ -885,11 +1208,6 @@ function crearRecorridoCinematico(
         );
 
 
-    /*
-       Margen que mantiene la cámara
-       fuera del edificio.
-    */
-
     const margen =
         mayor * 0.32;
 
@@ -904,24 +1222,7 @@ function crearRecorridoCinematico(
         margen;
 
 
-    /*
-       RECORRIDO EXTERIOR
-
-       Se mueve por:
-       frente
-       esquina
-       lateral
-       parte trasera
-       lateral
-       vuelta al frente
-
-       Con suficientes puntos para que
-       la curva sea suave.
-    */
-
     recorridoPosiciones = [
-
-        /* Frente derecho */
 
         new THREE.Vector3(
             x,
@@ -929,17 +1230,11 @@ function crearRecorridoCinematico(
             z * 0.35
         ),
 
-
-        /* Frente */
-
         new THREE.Vector3(
             x * 0.55,
             altura,
             z
         ),
-
-
-        /* Frente izquierdo */
 
         new THREE.Vector3(
             0,
@@ -947,17 +1242,11 @@ function crearRecorridoCinematico(
             z
         ),
 
-
-        /* Esquina izquierda */
-
         new THREE.Vector3(
             -x * 0.55,
             altura,
             z
         ),
-
-
-        /* Lateral izquierdo */
 
         new THREE.Vector3(
             -x,
@@ -965,26 +1254,17 @@ function crearRecorridoCinematico(
             z * 0.45
         ),
 
-
-        /* Lateral izquierdo medio */
-
         new THREE.Vector3(
             -x,
             altura * 1.05,
             0
         ),
 
-
-        /* Parte trasera izquierda */
-
         new THREE.Vector3(
             -x,
             altura * 1.15,
             -z * 0.45
         ),
-
-
-        /* Parte trasera */
 
         new THREE.Vector3(
             -x * 0.50,
@@ -992,17 +1272,11 @@ function crearRecorridoCinematico(
             -z
         ),
 
-
-        /* Parte trasera centro */
-
         new THREE.Vector3(
             0,
             altura * 1.25,
             -z
         ),
-
-
-        /* Parte trasera derecha */
 
         new THREE.Vector3(
             x * 0.50,
@@ -1010,26 +1284,17 @@ function crearRecorridoCinematico(
             -z
         ),
 
-
-        /* Lateral derecho */
-
         new THREE.Vector3(
             x,
             altura * 1.05,
             -z * 0.45
         ),
 
-
-        /* Lateral derecho medio */
-
         new THREE.Vector3(
             x,
             altura * 0.95,
             0
         ),
-
-
-        /* Regreso */
 
         new THREE.Vector3(
             x,
@@ -1039,10 +1304,6 @@ function crearRecorridoCinematico(
 
     ];
 
-
-    /* =====================================================
-       TODOS LOS OBJETIVOS MIRAN AL EDIFICIO
-    ===================================================== */
 
     recorridoObjetivos = [];
 
@@ -1059,12 +1320,6 @@ function crearRecorridoCinematico(
                 recorridoPosiciones.length - 1
             );
 
-
-        /*
-           La cámara comienza mirando un poco
-           hacia abajo y durante el recorrido
-           mantiene el edificio como centro.
-        */
 
         const objetivo =
             new THREE.Vector3(
@@ -1414,6 +1669,11 @@ function enfocarPuerta() {
        DISTANCIA
     ========================================== */
 
+    /*
+       Un poco más atrás que antes para que
+       se vea completa la entrada.
+    */
+
     const distancia =
         4;
 
@@ -1475,8 +1735,7 @@ function suavizar(
         valor *
         (
             3 -
-            2 *
-            valor
+            2 * valor
         )
     );
 
@@ -1585,10 +1844,6 @@ function protegerCamara() {
     }
 
 
-    /*
-       Un pequeño margen adicional.
-    */
-
     radioSeguro +=
         Math.max(
             tamañoEdificio.x,
@@ -1661,11 +1916,6 @@ function moverCamara() {
         haciendoRecorrido ||
         enfocandoPuerta
     ) {
-
-        /*
-           Si no se está usando WASD,
-           también frenamos suavemente.
-        */
 
         velocidadMovimiento.multiplyScalar(
             0.80
@@ -1820,10 +2070,6 @@ function moverCamara() {
         direccionDeseada.normalize();
 
 
-        /*
-           Aceleración suave.
-        */
-
         velocidadMovimiento.lerp(
             direccionDeseada.multiplyScalar(
                 velocidadMaxima
@@ -1834,11 +2080,6 @@ function moverCamara() {
     }
 
     else {
-
-        /*
-           Cuando sueltas la tecla,
-           la cámara se frena suavemente.
-        */
 
         velocidadMovimiento.lerp(
             new THREE.Vector3(
@@ -1953,11 +2194,6 @@ function animarRecorrido(
         progresoTotal -
         tramo;
 
-
-    /*
-       Suaviza la entrada y salida
-       de cada tramo.
-    */
 
     progresoTramo =
         suavizar(
