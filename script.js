@@ -161,10 +161,6 @@ controles.enableZoom =
 controles.enablePan =
     true;
 
-/*
-   El modelo ahora comienza frente a la entrada.
-   Se mantiene la rotación automática.
-*/
 controles.autoRotate =
     true;
 
@@ -595,16 +591,18 @@ loader.setDRACOLoader(
 
 
 /* =========================================================
-   FUNCIÓN PARA COLOCAR CÁMARA FRENTE A LA PUERTA
+   COLOCAR CÁMARA FRENTE A LA ENTRADA
 ========================================================= */
 
 function colocarCamaraEnEntrada(
     mayor
 ) {
 
-    if (
-        !puntoPuerta
-    ) {
+    /* =====================================================
+       SI NO SE ENCUENTRA LA PUERTA
+    ===================================================== */
+
+    if (!puntoPuerta) {
 
         console.warn(
             "No se encontró el objeto PUERTA. Se usará una cámara alternativa."
@@ -613,17 +611,20 @@ function colocarCamaraEnEntrada(
         const distanciaInicial =
             mayor * 0.40;
 
+
         camara.position.set(
-            0,
-            mayor * 0.18,
+            -mayor * 0.08,
+            mayor * 0.20,
             distanciaInicial
         );
+
 
         controles.target.set(
             0,
             mayor * 0.08,
             0
         );
+
 
         controles.update();
 
@@ -678,6 +679,7 @@ function colocarCamaraEnEntrada(
 
     const quaternionPuerta =
         new THREE.Quaternion();
+
 
     puntoPuerta.getWorldQuaternion(
         quaternionPuerta
@@ -805,12 +807,8 @@ function colocarCamaraEnEntrada(
     ===================================================== */
 
     /*
-       Esta es la parte importante.
-
-       La cámara queda suficientemente atrás
-       para que se vea completa la entrada,
-       pero sin regresar a la vista general
-       de la primera imagen.
+       Distancia suficiente para que se vea
+       la entrada completa.
     */
 
     const distanciaPorPuerta =
@@ -831,10 +829,6 @@ function colocarCamaraEnEntrada(
         );
 
 
-    /*
-       Evitamos que la cámara quede demasiado lejos.
-    */
-
     distanciaEntrada =
         Math.min(
             distanciaEntrada,
@@ -850,7 +844,7 @@ function colocarCamaraEnEntrada(
 
 
     /* =====================================================
-       POSICIÓN DE LA CÁMARA
+       POSICIÓN BASE
     ===================================================== */
 
     const posicionCamara =
@@ -866,20 +860,43 @@ function colocarCamaraEnEntrada(
     );
 
 
-    /*
-       Elevamos un poco la cámara.
+    /* =====================================================
+       DESPLAZAMIENTO LATERAL
+       
+       Cámara ligeramente hacia la izquierda.
+    ===================================================== */
 
-       Esto conserva el ángulo parecido
-       al de tu segunda imagen.
-    */
+    const lateral =
+        new THREE.Vector3(
+            -direccionPuerta.z,
+            0,
+            direccionPuerta.x
+        );
 
-    posicionCamara.y =
-        centroPuerta.y +
-        mayor * 0.08;
+
+    lateral.normalize();
+
+
+    posicionCamara.add(
+        lateral.multiplyScalar(
+            mayor * 0.10
+        )
+    );
 
 
     /* =====================================================
-       OBJETIVO
+       ALTURA
+
+       Ángulo picado suave.
+    ===================================================== */
+
+    posicionCamara.y =
+        centroPuerta.y +
+        mayor * 0.18;
+
+
+    /* =====================================================
+       OBJETIVO DE LA CÁMARA
     ===================================================== */
 
     const objetivo =
@@ -888,7 +905,7 @@ function colocarCamaraEnEntrada(
 
     objetivo.y =
         centroPuerta.y +
-        mayor * 0.025;
+        mayor * 0.02;
 
 
     /* =====================================================
@@ -909,18 +926,15 @@ function colocarCamaraEnEntrada(
 
 
     console.log(
-        "CÁMARA COLOCADA FRENTE A LA ENTRADA"
+        "CÁMARA INICIAL: FRONTAL + DIAGONAL IZQUIERDA + PICADO SUAVE"
     );
 
-    console.log(
-        "Distancia:",
-        distanciaEntrada
-    );
 
     console.log(
-        "Posición cámara:",
+        "Posición:",
         camara.position
     );
+
 
     console.log(
         "Objetivo:",
@@ -967,6 +981,7 @@ loader.load(
 
                     objeto.castShadow =
                         false;
+
 
                     objeto.receiveShadow =
                         false;
@@ -1026,6 +1041,7 @@ loader.load(
 
                     puntoPuerta =
                         objeto;
+
 
                     console.log(
                         "PUERTA ENCONTRADA:",
@@ -1089,20 +1105,11 @@ loader.load(
         ========================================== */
 
         /*
-           ANTES:
+           La cámara ya no comienza desde
+           una esquina general del edificio.
 
-           La cámara comenzaba desde una esquina:
-
-           x = distancia
-           y = distancia * 0.38
-           z = distancia
-
-           Por eso aparecía como en la primera imagen.
-
-           AHORA:
-
-           La cámara se coloca automáticamente
-           frente al objeto PUERTA.
+           Ahora comienza directamente frente
+           a la entrada.
         */
 
         colocarCamaraEnEntrada(
@@ -1111,7 +1118,7 @@ loader.load(
 
 
         /* ==========================================
-           DISTANCIAS DE ORBIT CONTROLS
+           DISTANCIAS ORBIT CONTROLS
         ========================================== */
 
         controles.minDistance =
@@ -1224,11 +1231,16 @@ function crearRecorridoCinematico(
 
     recorridoPosiciones = [
 
+        /* Frente derecho */
+
         new THREE.Vector3(
             x,
             altura,
             z * 0.35
         ),
+
+
+        /* Frente */
 
         new THREE.Vector3(
             x * 0.55,
@@ -1236,11 +1248,17 @@ function crearRecorridoCinematico(
             z
         ),
 
+
+        /* Frente izquierdo */
+
         new THREE.Vector3(
             0,
             altura * 1.02,
             z
         ),
+
+
+        /* Esquina izquierda */
 
         new THREE.Vector3(
             -x * 0.55,
@@ -1248,11 +1266,17 @@ function crearRecorridoCinematico(
             z
         ),
 
+
+        /* Lateral izquierdo */
+
         new THREE.Vector3(
             -x,
             altura * 0.95,
             z * 0.45
         ),
+
+
+        /* Lateral izquierdo medio */
 
         new THREE.Vector3(
             -x,
@@ -1260,11 +1284,17 @@ function crearRecorridoCinematico(
             0
         ),
 
+
+        /* Parte trasera izquierda */
+
         new THREE.Vector3(
             -x,
             altura * 1.15,
             -z * 0.45
         ),
+
+
+        /* Parte trasera */
 
         new THREE.Vector3(
             -x * 0.50,
@@ -1272,11 +1302,17 @@ function crearRecorridoCinematico(
             -z
         ),
 
+
+        /* Parte trasera centro */
+
         new THREE.Vector3(
             0,
             altura * 1.25,
             -z
         ),
+
+
+        /* Parte trasera derecha */
 
         new THREE.Vector3(
             x * 0.50,
@@ -1284,17 +1320,26 @@ function crearRecorridoCinematico(
             -z
         ),
 
+
+        /* Lateral derecho */
+
         new THREE.Vector3(
             x,
             altura * 1.05,
             -z * 0.45
         ),
 
+
+        /* Lateral derecho medio */
+
         new THREE.Vector3(
             x,
             altura * 0.95,
             0
         ),
+
+
+        /* Regreso */
 
         new THREE.Vector3(
             x,
@@ -1304,6 +1349,10 @@ function crearRecorridoCinematico(
 
     ];
 
+
+    /* =====================================================
+       OBJETIVOS
+    ===================================================== */
 
     recorridoObjetivos = [];
 
@@ -1669,11 +1718,6 @@ function enfocarPuerta() {
        DISTANCIA
     ========================================== */
 
-    /*
-       Un poco más atrás que antes para que
-       se vea completa la entrada.
-    */
-
     const distancia =
         4;
 
@@ -1844,6 +1888,10 @@ function protegerCamara() {
     }
 
 
+    /* =====================================================
+       MARGEN
+    ===================================================== */
+
     radioSeguro +=
         Math.max(
             tamañoEdificio.x,
@@ -1852,9 +1900,9 @@ function protegerCamara() {
         0.035;
 
 
-    /* ==========================================
+    /* =====================================================
        SACAR CÁMARA DEL EDIFICIO
-    ========================================== */
+    ===================================================== */
 
     if (
         distanciaHorizontal <
